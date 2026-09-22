@@ -1,37 +1,105 @@
 @import "tailwindcss";
 
+/*
+ * Pyre design system — the only theme this app has. Dark, obsidian, violet.
+ * Every colour, font and radius below is mandatory: the default Tailwind palette is
+ * removed on purpose, so `bg-orange-500` and friends do not exist here.
+ */
 @theme {
-  --color-ink: oklch(0.97 0.005 260);
-  --color-ink-dim: oklch(0.78 0.012 260);
-  --color-ink-faint: oklch(0.63 0.015 260);
-  --color-canvas: oklch(0.17 0.014 275);
-  --color-panel: oklch(0.22 0.016 275);
-  --color-panel-2: oklch(0.26 0.018 275);
-  --color-edge: oklch(0.34 0.02 275);
-  --color-accent: oklch(0.74 0.16 148);
-  --color-accent-ink: oklch(0.2 0.05 148);
-  --color-warn: oklch(0.8 0.15 80);
-  --color-danger: oklch(0.68 0.18 22);
+  --color-*: initial;
+
+  /* surfaces */
+  --color-bg: #0a0a0c;
+  --color-surface: #111114;
+  --color-surface-raised: #16161b;
+  --color-border: #1f1f24;
+  --color-border-strong: #2c2c33;
+
+  /* ink */
+  --color-ink: #f3f2ee;
+  --color-ink-muted: #a3a29c;
+  --color-ink-faint: #6b6a66;
+
+  /* accent */
+  --color-violet: #9d8cff;
+  --color-violet-hover: #7a66f5;
+  --color-violet-soft: rgb(157 140 255 / 0.14);
+
+  /* heat ramp: cold → hot; charts, progress, intensity only */
+  --color-heat-1: #1c1b2e;
+  --color-heat-2: #3b2f7a;
+  --color-heat-3: #7a66f5;
+  --color-heat-4: #3e8bff;
+  --color-heat-5: #9cd2ff;
+  --color-heat-6: #e9f1ff;
+
+  /* errors only */
+  --color-danger: #e5484d;
+  --color-danger-soft: rgb(229 72 77 / 0.12);
+
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --radius-card: 8px;
+}
+
+:root {
+  --pyre-bg: #0a0a0c;
+  --pyre-surface: #111114;
+  --pyre-border: #1f1f24;
+  --pyre-ink: #f3f2ee;
+  --pyre-violet: #9d8cff;
+  --pyre-violet-hover: #7a66f5;
+  --pyre-heat-1: #1c1b2e;
+  --pyre-heat-2: #3b2f7a;
+  --pyre-heat-3: #7a66f5;
+  --pyre-heat-4: #3e8bff;
+  --pyre-heat-5: #9cd2ff;
+  --pyre-heat-6: #e9f1ff;
+  --pyre-radius: 8px;
+  color-scheme: dark;
 }
 
 html {
-  color-scheme: dark;
+  background-color: var(--pyre-bg);
 }
 
 body {
   margin: 0;
-  background-color: var(--color-canvas);
-  color: var(--color-ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  -webkit-text-size-adjust: 100%;
+  background-color: var(--pyre-bg);
+  color: var(--pyre-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background-color: var(--pyre-violet);
+  color: var(--pyre-bg);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--pyre-violet);
   outline-offset: 2px;
 }
 
-/* Number inputs: hide the spinners, the steppers are too small to hit on mobile. */
+/* ---- App additions: same tokens, no new colours ------------------------------------------ */
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Number inputs: the steppers are too small to hit on a phone. */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   appearance: none;
@@ -41,4 +109,85 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* Weight sliders: track filled on the heat ramp via --track, ink thumb. */
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--track, var(--color-border-strong));
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--track, var(--color-border-strong));
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--pyre-ink);
+  border: 2px solid var(--pyre-bg);
+  box-shadow: 0 0 0 1px var(--color-border-strong);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pyre-ink);
+  border: 2px solid var(--pyre-bg);
+  box-shadow: 0 0 0 1px var(--color-border-strong);
+}
+
+@keyframes shimmer {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  background: var(--color-surface-raised);
+  border-radius: var(--pyre-radius);
+  animation: shimmer 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 220ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

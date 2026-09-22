@@ -1,8 +1,12 @@
-/** Shapes returned by `functions/*.js`. */
+/** Shapes returned by `functions/*.js`. Keep in sync with the JSDoc there. */
 
-export interface TokenWeight {
+/** One leg of a basket: a coin launched on Pyre, keyed by its slug, plus an integer weight. */
+export interface BasketToken {
+  slug: string;
   ticker: string;
-  name?: string;
+  name: string;
+  tokenAddress: string;
+  /** Integer percent, 1–100. Every basket's weights total exactly 100. */
   weight: number;
 }
 
@@ -10,16 +14,18 @@ export interface Basket {
   id: string;
   title: string;
   description: string;
-  rationale?: string;
+  rationale: string;
   tags: string[];
-  tokens: TokenWeight[];
+  tokens: BasketToken[];
   creatorId: string | null;
   creatorName: string;
   featured: boolean;
   createdAt: string;
-  updatedAt?: string;
-  demo?: boolean;
-  mine?: boolean;
+  updatedAt: string;
+  /** Derived from the coin universe on the client, never stored. */
+  auto: boolean;
+  /** True when the caller owns it. */
+  mine: boolean;
 }
 
 export interface BasketCard {
@@ -27,10 +33,19 @@ export interface BasketCard {
   title: string;
   blurb: string;
   tags: string[];
-  tokens: { ticker: string; weight: number }[];
+  tokens: { slug: string; ticker: string; weight: number }[];
   creatorName: string;
   featured: boolean;
+  auto: boolean;
   createdAt: string;
+}
+
+export type GallerySort = "newest" | "featured" | "24h";
+
+export interface GalleryQuery {
+  q: string;
+  tag: string;
+  sort: GallerySort;
 }
 
 export interface GalleryResult {
@@ -46,27 +61,45 @@ export interface BasketResult {
 
 export interface MineResult {
   ok: boolean;
-  reason?: string;
+  reason?: "auth";
   baskets: Basket[];
   freeLimit: number;
   unlimited: boolean;
-  paid?: boolean;
-  isHolder?: boolean;
-  remaining?: number | null;
+  isHolder: boolean;
+  /** Baskets left on the free tier; `null` when unlimited. */
+  remaining: number | null;
+}
+
+export interface PublishInput {
+  id?: string;
+  title: string;
+  description: string;
+  rationale: string;
+  tags: string[];
+  tokens: BasketToken[];
+  creatorName: string;
 }
 
 export interface PublishResult {
   ok: boolean;
-  reason?: "auth" | "invalid" | "limit";
+  reason?: "auth" | "invalid" | "limit" | "missing";
   error?: string;
   basket?: Basket;
   count?: number;
+  freeLimit?: number;
   unlimited?: boolean;
+}
+
+export interface RemoveResult {
+  ok: boolean;
+  reason?: "auth" | "invalid" | "owner";
+  error?: string;
+  id?: string;
 }
 
 export interface AssistResult {
   ok: boolean;
-  reason?: "auth" | "locked" | "invalid" | "rate" | "llm";
+  reason?: "auth" | "holder" | "invalid" | "rate" | "llm";
   error?: string;
   title?: string;
   description?: string;
