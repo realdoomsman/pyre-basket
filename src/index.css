@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: oklch(0.97 0.005 260);
+  --color-ink-dim: oklch(0.78 0.012 260);
+  --color-ink-faint: oklch(0.63 0.015 260);
+  --color-canvas: oklch(0.17 0.014 275);
+  --color-panel: oklch(0.22 0.016 275);
+  --color-panel-2: oklch(0.26 0.018 275);
+  --color-edge: oklch(0.34 0.02 275);
+  --color-accent: oklch(0.74 0.16 148);
+  --color-accent-ink: oklch(0.2 0.05 148);
+  --color-warn: oklch(0.8 0.15 80);
+  --color-danger: oklch(0.68 0.18 22);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Number inputs: hide the spinners, the steppers are too small to hit on mobile. */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Basket",
+  "version": "0.1.0",
+  "entry": "index.html",
+  "functions": [
+    { "name": "gallery", "priceUsd": 0, "auth": false, "holderOnly": false },
+    { "name": "basket", "priceUsd": 0, "auth": false, "holderOnly": false },
+    { "name": "publish", "priceUsd": 0, "auth": true, "holderOnly": false },
+    { "name": "mine", "priceUsd": 0, "auth": true, "holderOnly": false },
+    { "name": "remove", "priceUsd": 0, "auth": true, "holderOnly": false },
+    { "name": "assist", "priceUsd": 0, "auth": true, "holderOnly": false },
+    { "name": "unlock", "priceUsd": 0, "auth": true, "holderOnly": false }
+  ],
+  "products": [
+    {
+      "id": "basket-pro",
+      "name": "Basket Pro",
+      "priceUsd": 8,
+      "kind": "ONE_TIME"
+    }
+  ],
+  "adSlot": true,
+  "holderTier": {
+    "minHoldTokens": 5000000
+  }
+}
