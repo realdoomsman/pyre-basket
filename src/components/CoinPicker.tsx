@@ -70,7 +70,14 @@ export function CoinPicker({ universe, selected, disabled, onPick }: CoinPickerP
                     <Delta sinceLaunch={coin.young} value={coin.change24hPct} />
                   </div>
                 </div>
-                <Button aria-label={added ? `${coin.ticker} added` : `Add ${coin.ticker}`} disabled={added || disabled || coin.priceUsd <= 0} onClick={() => onPick(coin)} size="sm" variant="secondary">
+                <Button
+                  aria-label={added ? `${coin.ticker} added` : `Add ${coin.ticker}`}
+                  disabled={added || disabled || coin.priceUsd <= 0}
+                  onClick={() => onPick(coin)}
+                  size="sm"
+                  title={!added && coin.priceUsd <= 0 ? "Not priced on Pyre yet, so it cannot be sized into a basket." : undefined}
+                  variant="secondary"
+                >
                   {added ? "Added" : "Add"}
                 </Button>
               </li>
