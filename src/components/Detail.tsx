@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ship } from "@pyre/app-sdk";
-import { errorMessage, relativeDate } from "../lib";
+import { errorMessage, relativeDate, tagHref } from "../lib";
 import { btnGhost, btnPrimary, chip, panel } from "../ui";
 import { draftFromBasket, setDraft } from "../draft";
 import SplitCalculator from "./SplitCalculator";
@@ -90,7 +90,7 @@ export default function Detail({ id }: { id: string }) {
           <ul className="flex flex-wrap gap-2">
             {basket.tags.map((t) => (
               <li key={t}>
-                <a className={`${chip} hover:border-accent`} href="#/">
+                <a className={`${chip} hover:border-accent`} href={tagHref(t)}>
                   #{t}
                 </a>
               </li>

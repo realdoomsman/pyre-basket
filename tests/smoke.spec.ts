@@ -64,3 +64,42 @@ test("the builder offers the Pro unlock instead of the assistant to free users",
   await page.goto("/#/new");
   await expect(page.getByRole("heading", { name: /Basket Pro/ })).toBeVisible();
 });
+
+test("a tag on a basket page deep-links into a filtered gallery", async ({ page }) => {
+  await page.goto("/#/b/demo-dog-coins");
+  await page.getByRole("link", { name: "#dogs" }).click();
+
+  await expect(page).toHaveURL(/#\/\?tag=dogs$/);
+  const list = page.getByTestId("gallery-list");
+  await expect(list.getByRole("heading", { name: "Dog Coins" })).toBeVisible();
+  await expect(list.getByRole("heading", { name: "Frog Pond" })).toHaveCount(0);
+});
+
+test("the gallery honours a ?tag= filter on direct load and clears it", async ({ page }) => {
+  await page.goto("/#/?tag=frogs");
+  const list = page.getByTestId("gallery-list");
+  await expect(list.getByRole("heading", { name: "Frog Pond" })).toBeVisible();
+  await expect(list.getByRole("heading", { name: "Dog Coins" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "#frogs" })).toHaveAttribute("aria-pressed", "true");
+
+  await page.getByRole("button", { name: "All" }).click();
+  await expect(page).toHaveURL(/#\/$/);
+  await expect(list.getByRole("heading", { name: "Dog Coins" })).toBeVisible();
+});
+
+test("a tag chip inside a gallery card refilters without leaving the gallery", async ({ page }) => {
+  await page.goto("/#/");
+  const list = page.getByTestId("gallery-list");
+  await list.getByRole("link", { name: "#classics" }).click();
+
+  await expect(page).toHaveURL(/#\/\?tag=classics$/);
+  await expect(list.getByRole("heading", { name: "Dog Coins" })).toBeVisible();
+  await expect(list.getByRole("heading", { name: "Frog Pond" })).toHaveCount(0);
+});
+
+test("My baskets asks a signed-out visitor to log in without erroring", async ({ page }) => {
+  await page.goto("/#/mine");
+  const region = page.getByRole("region", { name: "My baskets" });
+  await expect(region.getByRole("heading", { name: "Log in to save baskets" })).toBeVisible();
+  await expect(region.getByRole("button", { name: "Log in" })).toBeVisible();
+});

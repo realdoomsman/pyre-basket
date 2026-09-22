@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ship } from "@pyre/app-sdk";
-import { errorMessage, relativeDate, seriesColor } from "../lib";
+import { errorMessage, relativeDate, seriesColor, tagFromHash, tagHref } from "../lib";
 import { btnGhost, btnPrimary, chip, input, panel } from "../ui";
 import type { BasketCard, GalleryResult } from "../types";
 
@@ -54,13 +54,18 @@ function Card({ basket }: { basket: BasketCard }) {
         <span>by {basket.creatorName}</span>
         <span aria-hidden="true">·</span>
         <span>{relativeDate(basket.createdAt)}</span>
-        {basket.tags.length > 0 ? (
-          <>
-            <span aria-hidden="true">·</span>
-            <span className="truncate">{basket.tags.map((t) => `#${t}`).join(" ")}</span>
-          </>
-        ) : null}
       </p>
+      {basket.tags.length > 0 ? (
+        <ul className="relative z-10 flex flex-wrap gap-1.5">
+          {basket.tags.map((t) => (
+            <li key={t}>
+              <a className="text-xs text-ink-faint underline-offset-2 hover:text-ink hover:underline" href={tagHref(t)}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </li>
   );
 }
@@ -68,13 +73,25 @@ function Card({ basket }: { basket: BasketCard }) {
 export default function Gallery() {
   const searchId = useId();
   const [query, setQuery] = useState("");
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState(() => tagFromHash(window.location.hash));
   const [sort, setSort] = useState<"newest" | "featured">("newest");
   const [data, setData] = useState<GalleryResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const debounced = useRef(query);
+
+  // A tag chip elsewhere in the app links to `#/?tag=...`; keep the filter and the URL in sync.
+  useEffect(() => {
+    const onHashChange = (): void => setTag(tagFromHash(window.location.hash));
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  const goToTag = (next: string): void => {
+    window.location.hash = tagHref(next);
+    setTag(next);
+  };
 
   const load = useCallback(async (q: string, t: string, s: string): Promise<void> => {
     setLoading(true);
@@ -148,7 +165,7 @@ export default function Gallery() {
               <button
                 aria-pressed={tag === ""}
                 className={`${chip} ${tag === "" ? "border-accent text-ink" : ""}`}
-                onClick={() => setTag("")}
+                onClick={() => goToTag("")}
                 type="button"
               >
                 All
@@ -159,7 +176,7 @@ export default function Gallery() {
                 <button
                   aria-pressed={tag === t}
                   className={`${chip} ${tag === t ? "border-accent text-ink" : ""}`}
-                  onClick={() => setTag(t === tag ? "" : t)}
+                  onClick={() => goToTag(t === tag ? "" : t)}
                   type="button"
                 >
                   #{t}
@@ -199,7 +216,7 @@ export default function Gallery() {
                 className={btnGhost}
                 onClick={() => {
                   setQuery("");
-                  setTag("");
+                  goToTag("");
                 }}
                 type="button"
               >

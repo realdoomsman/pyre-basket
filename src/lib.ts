@@ -101,6 +101,18 @@ export function normalizeWeights(weights: number[]): number[] {
   return rows.map((r) => r.weight);
 }
 
+/** Gallery tag filter, round-tripped through the URL hash so it can be linked to and shared. */
+export function tagHref(tag: string): string {
+  return tag === "" ? "#/" : `#/?tag=${encodeURIComponent(tag)}`;
+}
+
+export function tagFromHash(hash: string): string {
+  const qIndex = hash.indexOf("?");
+  if (qIndex === -1) return "";
+  const tag = new URLSearchParams(hash.slice(qIndex + 1)).get("tag") ?? "";
+  return tag.trim().toLowerCase().slice(0, 40);
+}
+
 export function relativeDate(iso: string): string {
   const then = Date.parse(iso);
   if (Number.isNaN(then)) return "";
