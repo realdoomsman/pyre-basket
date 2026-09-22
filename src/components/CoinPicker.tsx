@@ -7,6 +7,7 @@ import { Delta } from "./Delta";
 import { EmptyState } from "./EmptyState";
 import { Input } from "./Input";
 import { Skeleton } from "./Skeleton";
+import { Tabs } from "./Tabs";
 
 export interface CoinPickerProps {
   universe: Universe;
@@ -18,23 +19,45 @@ export interface CoinPickerProps {
 
 const SHOW = 12;
 
+type ListFilter = "all" | "trending" | "new";
+
+const FILTERS: { value: ListFilter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "trending", label: "Trending" },
+  { value: "new", label: "New" },
+];
+
 /** Searchable list of every coin on Pyre: ticker, name, mcap, 24h. Picking one adds a leg. */
 export function CoinPicker({ universe, selected, disabled, onPick }: CoinPickerProps) {
   const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<ListFilter>("all");
   const needle = q.trim().toLowerCase();
-  const matches = universe.coins.filter((c) => needle === "" || c.ticker.toLowerCase().includes(needle) || c.name.toLowerCase().includes(needle) || c.slug.includes(needle));
+  const base = filter === "trending" ? universe.trending : filter === "new" ? universe.fresh : universe.coins;
+  const matches = base.filter((c) => needle === "" || c.ticker.toLowerCase().includes(needle) || c.name.toLowerCase().includes(needle) || c.slug.includes(needle));
   const shown = matches.slice(0, SHOW);
+  const emptyReason =
+    needle !== ""
+      ? "No coin on Pyre matches that."
+      : filter === "trending"
+        ? "Pyre has no trending coins right now."
+        : filter === "new"
+          ? "Pyre has no fresh launches right now."
+          : "Pyre has not listed any coins yet.";
 
   return (
     <div className="flex flex-col gap-3">
-      <Input
-        aria-label="Search coins by ticker or name"
-        autoComplete="off"
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Search coins by ticker or name"
-        type="search"
-        value={q}
-      />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          aria-label="Search coins by ticker or name"
+          autoComplete="off"
+          className="flex-1"
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search coins by ticker or name"
+          type="search"
+          value={q}
+        />
+        <Tabs label="Show coins" onChange={setFilter} options={FILTERS} value={filter} />
+      </div>
       {universe.status === "error" ? (
         <EmptyState
           action={
@@ -52,7 +75,7 @@ export function CoinPicker({ universe, selected, disabled, onPick }: CoinPickerP
           ))}
         </div>
       ) : shown.length === 0 ? (
-        <EmptyState description={needle === "" ? "Pyre has not listed any coins yet." : "No coin on Pyre matches that."} title="Nothing to add" />
+        <EmptyState description={emptyReason} title="Nothing to add" />
       ) : (
         <ul aria-label="Coins on Pyre" className="flex flex-col divide-y divide-border rounded-card border border-border">
           {shown.map((coin) => {

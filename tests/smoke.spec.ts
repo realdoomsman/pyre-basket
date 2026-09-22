@@ -172,6 +172,22 @@ test("the builder picks coins from the universe, validates the split and asks an
   await expect(page.getByText("The coin has not launched yet.")).toBeVisible();
 });
 
+test("the coin picker can narrow to trending or newly launched coins", async ({ page }) => {
+  await page.goto("/#/new");
+  const coins = page.getByRole("list", { name: "Coins on Pyre" });
+  // Trending and the unfiltered "All" list share the same order in the example universe.
+  await expect(coins.getByRole("listitem").first()).toContainText("EXA");
+
+  await page.getByRole("radio", { name: "New" }).click();
+  await expect(coins.getByRole("listitem").first()).toContainText("EXH");
+
+  await page.getByRole("radio", { name: "Trending" }).click();
+  await expect(coins.getByRole("listitem").first()).toContainText("EXA");
+
+  await page.getByRole("radio", { name: "All" }).click();
+  await expect(coins.getByRole("listitem").first()).toContainText("EXA");
+});
+
 test("the weight slider keeps the total in sync with the number field", async ({ page }) => {
   await page.goto("/#/new");
   await page.getByRole("button", { name: "Add EXA" }).click();

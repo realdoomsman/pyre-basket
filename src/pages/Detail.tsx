@@ -354,7 +354,7 @@ function BasketView({ basket }: { basket: Basket }) {
                 />
                 <div aria-label="Quick amounts" className="flex flex-wrap gap-1.5 pb-0.5" role="group">
                   {PRESETS.map((p) => (
-                    <Button key={p} className="font-mono" onClick={() => setText(String(p))} size="sm" variant={budget === p ? "primary" : "secondary"}>
+                    <Button key={p} aria-pressed={budget === p} className="font-mono" onClick={() => setText(String(p))} size="sm" variant={budget === p ? "primary" : "secondary"}>
                       ${p.toLocaleString("en-US")}
                     </Button>
                   ))}
